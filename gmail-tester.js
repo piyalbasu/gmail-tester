@@ -18,6 +18,7 @@ async function _get_recent_email(credentials_json, token_path, options = {}) {
   for (const gmail_email of gmail_emails) {
     const email = {
       from: _get_header("From", gmail_email.payload.headers),
+      id: gmail_email.id,
       subject: _get_header("Subject", gmail_email.payload.headers),
       receiver: _get_header("Delivered-To", gmail_email.payload.headers)
     };
@@ -128,4 +129,12 @@ async function get_messages(credentials_json, token_path, options) {
   }
 }
 
-module.exports = { check_inbox, get_messages };
+async function trash_message(credentials_json, token_path, id) {
+  const content = fs.readFileSync(credentials_json);
+  const oAuth2Client = await gmail.authorize(JSON.parse(content), token_path);
+  const gmail_client = google.gmail({ version: "v1", oAuth2Client });
+  const res = await gmail.trash_email(gmail_client, oAuth2Client, id);
+  return res;
+}
+
+module.exports = { check_inbox, get_messages, trash_message };

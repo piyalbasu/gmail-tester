@@ -149,9 +149,25 @@ async function get_recent_email(gmail, oauth2Client) {
     const results = await Promise.all(promises);
     return results.map(r => r.data);
   } catch (error) {}
-}
+
+
+  async function trash_email(gmail, oauth2Client, id) {
+    const trash = util.promisify(gmail.users.messages.trash);
+    try {
+      const res = await trash({
+        auth: oauth2Client,
+        userId: "me",
+        id
+      });
+      return res;
+    } catch (err) {
+      console.log("The API returned an error: " + err);
+      throw err;
+    }
+  }
 
 module.exports = {
   authorize,
-  get_recent_email
+  get_recent_email,
+  trash_email
 };
