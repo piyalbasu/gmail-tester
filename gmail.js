@@ -5,7 +5,7 @@ const { google } = require("googleapis");
 const util = require("util");
 
 // If modifying these scopes, delete token.json.
-const SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"];
+const SCOPES = ["https://www.googleapis.com/auth/gmail.modify"];
 // The file token.json stores the user's access and refresh tokens, and is
 // created automatically when the authorization flow completes for the first
 // time.
@@ -149,22 +149,23 @@ async function get_recent_email(gmail, oauth2Client) {
     const results = await Promise.all(promises);
     return results.map(r => r.data);
   } catch (error) {}
+}
 
 
-  async function trash_email(gmail, oauth2Client, id) {
-    const trash = util.promisify(gmail.users.messages.trash);
-    try {
-      const res = await trash({
-        auth: oauth2Client,
-        userId: "me",
-        id
-      });
-      return res;
-    } catch (err) {
-      console.log("The API returned an error: " + err);
-      throw err;
-    }
+async function trash_email(gmail, oauth2Client, id) {
+  const trash = util.promisify(gmail.users.messages.trash);
+  try {
+    const res = await trash({
+      auth: oauth2Client,
+      userId: "me",
+      id
+    });
+    return res;
+  } catch (err) {
+    console.log("The API returned an error: " + err);
+    throw err;
   }
+}
 
 module.exports = {
   authorize,
